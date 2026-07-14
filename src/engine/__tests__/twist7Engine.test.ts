@@ -23,7 +23,7 @@ const num = (id: string, value: number): Card => ({ id, kind: 'number', value })
 const plus = (id: string, amount: number): Card => ({ id, kind: 'modifier', modifier: 'plus', amount });
 const dbl = (id: string): Card => ({ id, kind: 'modifier', modifier: 'double', amount: 2 });
 const freeze = (id: string): Card => ({ id, kind: 'action', action: 'freeze' });
-const flipThree = (id: string): Card => ({ id, kind: 'action', action: 'flipThree' });
+const twistThree = (id: string): Card => ({ id, kind: 'action', action: 'twistThree' });
 const secondChance = (id: string): Card => ({ id, kind: 'action', action: 'secondChance' });
 
 function withDeck(state: Twist7State, deck: Card[]): Twist7State {
@@ -38,7 +38,7 @@ describe('deck', () => {
       DEFAULT_DECK_CONFIG.modifiers.plus.length +
       DEFAULT_DECK_CONFIG.modifiers.double +
       DEFAULT_DECK_CONFIG.actions.freeze +
-      DEFAULT_DECK_CONFIG.actions.flipThree +
+      DEFAULT_DECK_CONFIG.actions.twistThree +
       DEFAULT_DECK_CONFIG.actions.secondChance;
     expect(deck).toHaveLength(expected); // 79 numbers + 6 bonuses + 9 actions = 94
     expect(deck.filter((c) => c.kind === 'number')).toHaveLength(79);
@@ -49,7 +49,7 @@ describe('deck', () => {
 
 describe('deal & round flow', () => {
   it('deals one card to each player and starts the play phase', () => {
-    let s = createGame(setup2);
+    let s = createGame({ ...setup2, dealerIndex: 1 });
     s = withDeck(s, [num('a', 5), num('b', 2)]); // plain numbers, no actions
     s = startRound(s);
     expect(s.phase).toBe('play');
@@ -79,7 +79,7 @@ describe('deal & round flow', () => {
   });
 
   it('busts the active player on a duplicate value and advances', () => {
-    let s = createGame(setup2);
+    let s = createGame({ ...setup2, dealerIndex: 1 });
     s = withDeck(s, [num('c0', 1), num('c1', 2), num('c2', 1)]);
     s = startRound(s); // deals 1 to A, 2 to B
     s = withDeck(s, [num('c2', 1)]);
@@ -90,7 +90,7 @@ describe('deal & round flow', () => {
   });
 
   it('Flip 7 ends the round with a +15 bonus', () => {
-    let s = createGame(setup2);
+    let s = createGame({ ...setup2, dealerIndex: 1 });
     s = withDeck(s, [num('d0', 7), num('d1', 8), num('t0', 0), num('t1', 1), num('t2', 2), num('t3', 3), num('t4', 4), num('t5', 5)]);
     s = startRound(s); // A:7, B:8, currentIndex 0
     // B steps out so A keeps taking solo until Flip 7 (turns alternate otherwise).
@@ -105,7 +105,7 @@ describe('deal & round flow', () => {
   });
 
   it('staying banks the correct score including +X and x2', () => {
-    let s = createGame(setup2);
+    let s = createGame({ ...setup2, dealerIndex: 1 });
     s = withDeck(s, [num('d0', 5), num('d1', 3)]);
     s = startRound(s); // A:5, B:3, currentIndex 0
     // Give A the full row it would have built (no turn-passing needed), keep B
@@ -127,7 +127,7 @@ describe('deal & round flow', () => {
   });
 
   it('a Freeze is handed to another player (the drawer stays in the round)', () => {
-    let s = createGame(setup2);
+    let s = createGame({ ...setup2, dealerIndex: 1 });
     s = withDeck(s, [num('d0', 7), num('d1', 8), freeze('f1')]);
     s = startRound(s); // A active [7], B active [8], current = 0 (A)
     s = withDeck(s, [freeze('f1')]);
@@ -148,6 +148,7 @@ describe('deal & round flow', () => {
         { id: 'b', name: 'B', isAI: true, difficulty: 'hard' },
         { id: 'c', name: 'C', isAI: true, difficulty: 'hard' },
       ],
+      dealerIndex: 2,
     });
     s = withDeck(s, [num('a', 10), num('b', 4), num('c', 1)]);
     s = startRound(s); // current = 0 (A), rows A=10 B=4 C=1
@@ -158,20 +159,21 @@ describe('deal & round flow', () => {
     expect(s.players[2].roundStatus).toBe('active'); // C untouched
   });
 
-  it('a Twist Three draws three cards for the drawer and flags the round', () => {
-    let s = createGame(setup2);
+  it('a Twist Three forces three draws on an opponent and flags the round', () => {
+    let s = createGame({ ...setup2, dealerIndex: 1 });
     s = withDeck(s, [num('a', 5), num('b', 2)]);
-    s = startRound(s); // A active [5], current = 0 (A)
-    const before = s.players[0].row.length; // 1 (the deal card)
-    // Top of deck: the Twist Three, then the 3 cards it forces.
-    s = withDeck(s, [flipThree('f'), num('a1', 7), num('a2', 9), num('a3', 1)]);
-    s = takeCard(s); // A draws Twist Three -> draws 3 more cards
-    expect(s.players[0].row.length).toBe(before + 3); // 3 extra cards in the row
-    expect(s.players[0].flipThree).toBe(true); // visible indicator set
+    s = startRound(s); // A active [5], current = 0 (A); B active [2]
+    const beforeB = s.players[1].row.length; // 1 (the deal card)
+    // Top of deck: the Twist Three, then the 3 cards it forces onto B.
+    s = withDeck(s, [twistThree('f'), num('a1', 7), num('a2', 9), num('a3', 1)]);
+    s = takeCard(s); // A plays Twist Three -> B (opponent) draws 3 more cards
+    expect(s.players[1].row.length).toBe(beforeB + 3); // 3 extra cards in B's row
+    expect(s.players[1].twistThree).toBe(true); // B flagged as the effect target
+    expect(s.players[0].row.length).toBe(1); // A did not draw extra cards
   });
 
   it('a frozen player keeps their points when the round ends', () => {
-    let s = createGame(setup2);
+    let s = createGame({ ...setup2, dealerIndex: 1 });
     s = withDeck(s, [num('a', 5), num('b', 3)]);
     s = startRound(s); // A active [5], B active [3], current = 0 (A)
     s = withDeck(s, [num('a', 2)]);
@@ -188,7 +190,7 @@ describe('deal & round flow', () => {
   });
 
   it('ends the game when a player reaches the target at round end', () => {
-    let s = createGame(setup2);
+    let s = createGame({ ...setup2, dealerIndex: 1 });
     s = { ...s, players: s.players.map((p, i) => (i === 0 ? { ...p, bankedScore: 195 } : p)) };
     s = withDeck(s, [num('a', 5), num('b', 2)]);
     s = startRound(s);
@@ -201,7 +203,7 @@ describe('deal & round flow', () => {
   });
 
   it('nextRound discards rows and rotates the dealer', () => {
-    let s = createGame(setup2);
+    let s = createGame({ ...setup2, dealerIndex: 1 });
     s = withDeck(s, [num('a', 5), num('b', 2)]);
     s = startRound(s);
     s = stay(s); // A stays
@@ -212,13 +214,13 @@ describe('deal & round flow', () => {
     const discarded = s.discard.length;
     const s2 = nextRound(s);
     expect(s2.phase).toBe('setup');
-    expect(s2.dealerIndex).toBe(1);
+    expect(s2.dealerIndex).toBe(0);
     expect(s2.players[0].row).toHaveLength(0);
     expect(s2.discard.length).toBeGreaterThan(discarded);
   });
 
   it('Second Chance is set aside, not placed in the row', () => {
-    let s = createGame(setup2);
+    let s = createGame({ ...setup2, dealerIndex: 1 });
     s = withDeck(s, [num('a', 5), num('b', 3)]);
     s = startRound(s); // A:5, B:3
     s = withDeck(s, [secondChance('sc'), num('r', 2)]);
@@ -229,7 +231,7 @@ describe('deal & round flow', () => {
   });
 
   it('a duplicate while holding Second Chance pauses for a decision', () => {
-    let s = createGame(setup2);
+    let s = createGame({ ...setup2, dealerIndex: 1 });
     s = withDeck(s, [num('a', 5), num('b', 3)]);
     s = startRound(s);
     s = withDeck(s, [secondChance('sc'), num('r', 2)]);
@@ -247,7 +249,7 @@ describe('deal & round flow', () => {
   });
 
   it('declining Second Chance on a duplicate busts the player', () => {
-    let s = createGame(setup2);
+    let s = createGame({ ...setup2, dealerIndex: 1 });
     s = withDeck(s, [num('a', 5), num('b', 3)]);
     s = startRound(s);
     s = withDeck(s, [secondChance('sc'), num('r', 2)]);
@@ -261,7 +263,7 @@ describe('deal & round flow', () => {
   });
 
   it('records each round score in history for the recap table', () => {
-    let s = createGame(setup2);
+    let s = createGame({ ...setup2, dealerIndex: 1 });
     s = withDeck(s, [num('a', 5), num('b', 2)]);
     s = startRound(s);
     s = stay(s); // A stays with 5 -> banked, turn passes to B
@@ -297,8 +299,9 @@ describe('deal & round flow', () => {
     const before = s.players[0].bankedScore;
     s = takeCard(s);
     expect(s.phase).toBe('roundEnd');
-    // The Freeze has no valid target, so it is discarded — A is never frozen.
-    expect(s.players[0].roundStatus).toBe('active');
+    // The Freeze has no other active target, so per the rules A must freeze
+    // themselves — keeping the points they were holding.
+    expect(s.players[0].roundStatus).toBe('frozen');
     expect(s.pendingFreeze).toBeNull();
     // A still banks the points it was holding when the round ends.
     expect(s.players[0].bankedScore).toBeGreaterThan(before);

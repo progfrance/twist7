@@ -3,7 +3,7 @@ import { Card } from './types';
 export interface DeckConfig {
   numberCopies: Record<number, number>;
   modifiers: { plus: number[]; double: number };
-  actions: { freeze: number; flipThree: number; secondChance: number };
+  actions: { freeze: number; twistThree: number; secondChance: number };
 }
 
 // Number-card counts per the official rulebook (page 1):
@@ -24,7 +24,7 @@ function defaultNumberCopies(): Record<number, number> {
 export const DEFAULT_DECK_CONFIG: DeckConfig = {
   numberCopies: defaultNumberCopies(),
   modifiers: { plus: [2, 4, 6, 8, 10], double: 1 },
-  actions: { freeze: 3, flipThree: 3, secondChance: 3 },
+  actions: { freeze: 3, twistThree: 3, secondChance: 3 },
 };
 
 export function buildDeck(config: DeckConfig = DEFAULT_DECK_CONFIG): Card[] {
@@ -46,8 +46,8 @@ export function buildDeck(config: DeckConfig = DEFAULT_DECK_CONFIG): Card[] {
   for (let i = 0; i < config.actions.freeze; i++) {
     cards.push({ id: `f${seq++}`, kind: 'action', action: 'freeze' });
   }
-  for (let i = 0; i < config.actions.flipThree; i++) {
-    cards.push({ id: `t${seq++}`, kind: 'action', action: 'flipThree' });
+  for (let i = 0; i < config.actions.twistThree; i++) {
+    cards.push({ id: `t${seq++}`, kind: 'action', action: 'twistThree' });
   }
   for (let i = 0; i < config.actions.secondChance; i++) {
     cards.push({ id: `s${seq++}`, kind: 'action', action: 'secondChance' });

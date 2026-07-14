@@ -25,7 +25,7 @@ function defaultSetup(mode: string): Twist7Setup {
   };
 }
 
-type CardSize = 'sm' | 'md' | 'lg';
+type CardSize = 'sm' | 'md';
 
 const SECOND_CHANCE_CARD: CardModel = {
   id: 'ui-second',
@@ -33,7 +33,7 @@ const SECOND_CHANCE_CARD: CardModel = {
   action: 'secondChance',
 };
 
-const FLIP_THREE_CARD: CardModel = { id: 'ui-flip', kind: 'action', action: 'flipThree' };
+const TWIST_THREE_CARD: CardModel = { id: 'ui-twist', kind: 'action', action: 'twistThree' };
 
 function PlayerBox({
   p,
@@ -117,20 +117,20 @@ function PlayerBox({
       </div>
 
       <div className="relative">
-        {(p.secondChance || p.flipThree) && (
+        {(p.secondChance || p.twistThree) && (
           <div className="mb-2 flex gap-2">
             {p.secondChance && (
               <Card card={SECOND_CHANCE_CARD} size={cardSize} variant="active" />
             )}
-            {p.flipThree && (
-              <Card card={FLIP_THREE_CARD} size={cardSize} variant="active" />
+            {p.twistThree && (
+              <Card card={TWIST_THREE_CARD} size={cardSize} variant="active" />
             )}
           </div>
         )}
         {p.row.length === 0 &&
           p.roundStatus !== 'frozen' &&
           !p.secondChance &&
-          !p.flipThree && (
+          !p.twistThree && (
             <span className="text-xs text-zinc-600 opacity-60">—</span>
           )}
 

@@ -5,12 +5,12 @@ import { useI18n } from '../i18n';
 
 const FREEZE: CardModel = { id: 'r-freeze', kind: 'action', action: 'freeze' };
 const SECOND: CardModel = { id: 'r-second', kind: 'action', action: 'secondChance' };
-const FLIP: CardModel = { id: 'r-flip', kind: 'action', action: 'flipThree' };
+const TWIST_THREE: CardModel = { id: 'r-twist', kind: 'action', action: 'twistThree' };
 
 const ACTIONS: { card: CardModel; titleKey: string }[] = [
   { card: FREEZE, titleKey: 'rules.action.freeze' },
   { card: SECOND, titleKey: 'rules.action.second' },
-  { card: FLIP, titleKey: 'rules.action.flip' },
+  { card: TWIST_THREE, titleKey: 'rules.action.twistThree' },
 ];
 
 export function RulesModal({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -33,7 +33,7 @@ export function RulesModal({ open, onClose }: { open: boolean; onClose: () => vo
       case 1:
         return <p>{t('rules.second.desc')}</p>;
       case 2:
-        return <p>{t('rules.flip.desc')}</p>;
+        return <p>{t('rules.twistThree.desc')}</p>;
       default:
         return null;
     }

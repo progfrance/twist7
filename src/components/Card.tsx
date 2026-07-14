@@ -3,20 +3,24 @@ import { Card as CardModel } from '../engine/types';
 import { useI18n } from '../i18n';
 
 /* ─── Types ─── */
-type Variant = 'active' | 'duplicate' | 'frozen' | 'busted' | 'deck';
-type Size = 'sm' | 'md' | 'lg';
+type Variant = 'active' | 'frozen' | 'busted' | 'deck';
+type Size = 'sm' | 'md';
 
 /* ─── Sizes ─── */
 const SIZE_CLASS: Record<Size, string> = {
   sm: 'w-14 h-20 text-xs',
   md: 'w-24 h-34 text-base',
-  lg: 'w-32 h-46 text-xl',
 };
 
 const PIP_CLASS: Record<Size, string> = {
   sm: 'w-2 h-2',
   md: 'w-3 h-3',
-  lg: 'w-4 h-4',
+};
+
+/* ─── Ring (border highlight) per card variant ─── */
+const RING: Partial<Record<Variant, string>> = {
+  frozen: 'ring-2 ring-sky-300',
+  busted: 'ring-2 ring-red-500/70',
 };
 
 /* ─── Official colours per value (BGG component list) ─── */
@@ -295,7 +299,7 @@ function NumberCardContent({
         <span
           className="mt-0.5 text-[0.35em] font-bold uppercase tracking-widest text-gray-800"
         >
-          {t(`card.name${value}`)}
+          {t(`card.number.${value}`)}
         </span>
       )}
 
@@ -335,8 +339,8 @@ function ModifierCardContent({
   const accent = '#be123c';
   const symbol = isDouble ? '×' : '+';
   const text = isDouble
-    ? t('card.doubleScore')
-    : t('card.addScore', { n: amount });
+    ? t('card.modifier.double')
+    : t('card.modifier.plus', { n: amount });
 
   return (
     <div className="flex h-full flex-col items-center justify-center px-2 py-4 text-black">
@@ -414,8 +418,8 @@ function SecondChanceContent({
 }) {
   return (
     <SpecialCardLayout
-      label={t('card.scKeep')}
-      sub={t('card.scDiscard')}
+      label={t('card.secondChance.keep')}
+      sub={t('card.secondChance.discard')}
       textColor="white"
       emblem={
         <Heart color="#e11d48" outline="#bf953f" size={size === 'sm' ? 20 : 30} />
@@ -425,7 +429,7 @@ function SecondChanceContent({
 }
 
 /* ─── Twist Three card ─── */
-function FlipThreeContent({
+function TwistThreeContent({
   size,
   t,
 }: {
@@ -434,8 +438,8 @@ function FlipThreeContent({
 }) {
   return (
     <SpecialCardLayout
-      label={t('card.ftDraw')}
-      sub={t('card.ftBy')}
+      label={t('card.twistThree.draw')}
+      sub={t('card.twistThree.by')}
       textColor="black"
       emblem={
         <Lightning color="#e11d48" outline="#bf953f" size={size === 'sm' ? 24 : 34} />
@@ -452,8 +456,8 @@ function FreezeContent({
 }) {
   return (
     <SpecialCardLayout
-      label={t('card.fzTarget')}
-      sub={t('card.fzLose')}
+      label={t('card.freeze.target')}
+      sub={t('card.freeze.lose')}
       textColor="white"
       emblem={
         <GoldOutlineText text="❄" color="#e0f2fe" className="text-[2.2em]" />
@@ -478,14 +482,7 @@ export function Card({
   if (variant === 'deck') return <DeckBack size={size} className={className} />;
   if (!card) return null;
 
-  const ring =
-    variant === 'duplicate'
-      ? 'ring-2 ring-red-500'
-      : variant === 'frozen'
-        ? 'ring-2 ring-sky-300'
-        : variant === 'busted'
-          ? 'ring-2 ring-red-500/70'
-          : '';
+  const ring = RING[variant] ?? '';
 
   const dim = variant === 'frozen' || variant === 'busted';
   const opacity = dim ? 0.55 : 1;
@@ -542,10 +539,10 @@ export function Card({
       arch: '#7dd3fc',
       content: <FreezeContent t={t} />,
     },
-    flipThree: {
+    twistThree: {
       bg: 'linear-gradient(160deg,#fde047,#d97706)',
       arch: '#f59e0b',
-      content: <FlipThreeContent size={size} t={t} />,
+      content: <TwistThreeContent size={size} t={t} />,
     },
     secondChance: {
       bg: 'linear-gradient(160deg,#fca5a5,#dc2626)',

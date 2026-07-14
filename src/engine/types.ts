@@ -20,7 +20,7 @@ export interface ModifierCard {
 export interface ActionCard {
   id: string;
   kind: 'action';
-  action: 'freeze' | 'flipThree' | 'secondChance';
+  action: 'freeze' | 'twistThree' | 'secondChance';
 }
 export type Card = NumberCard | ModifierCard | ActionCard;
 
@@ -40,7 +40,7 @@ export interface Player {
   roundScore: number;
   roundStatus: RoundStatus;
   secondChance: boolean;
-  flipThree: boolean;
+  twistThree: boolean;
   twistSeven: boolean;
 }
 
@@ -48,6 +48,7 @@ export type GamePhase = 'setup' | 'play' | 'roundEnd' | 'gameOver';
 
 export interface Twist7Setup {
   players: { id: string; name: string; isAI: boolean; difficulty?: Difficulty }[];
+  dealerIndex?: number;
 }
 
 export interface Twist7State {
@@ -60,7 +61,6 @@ export interface Twist7State {
   roundNumber: number;
   targetScore: number;
   winnerId: PlayerId | null;
-  log: string[];
   // When set, the player at this index just drew a Freeze and must choose
   // another active player to hand it to. (Always a human — AI picks instantly.)
   pendingFreeze: number | null;

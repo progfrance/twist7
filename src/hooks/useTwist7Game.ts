@@ -40,13 +40,13 @@ export function useTwist7Game(setup: Twist7Setup) {
 
   const take = useCallback(() => dispatch({ type: 'TAKE' }), []);
   const stay = useCallback(() => dispatch({ type: 'STAY' }), []);
-  const startRound_ = useCallback(() => dispatch({ type: 'START_ROUND' }), []);
-  const nextRound_ = useCallback(() => dispatch({ type: 'NEXT_ROUND' }), []);
-  const resolveSecondChance_ = useCallback(
+  const onStartRound = useCallback(() => dispatch({ type: 'START_ROUND' }), []);
+  const onNextRound = useCallback(() => dispatch({ type: 'NEXT_ROUND' }), []);
+  const onResolveSecondChance = useCallback(
     (useIt: boolean) => dispatch({ type: 'RESOLVE_SECOND_CHANCE', useIt }),
     [],
   );
-  const resolveFreeze_ = useCallback(
+  const onResolveFreeze = useCallback(
     (targetIdx: number) => dispatch({ type: 'RESOLVE_FREEZE', targetIdx }),
     [],
   );
@@ -55,9 +55,9 @@ export function useTwist7Game(setup: Twist7Setup) {
     state,
     take,
     stay,
-    startRound: startRound_,
-    nextRound: nextRound_,
-    resolveSecondChance: resolveSecondChance_,
-    resolveFreeze: resolveFreeze_,
+    startRound: onStartRound,
+    nextRound: onNextRound,
+    resolveSecondChance: onResolveSecondChance,
+    resolveFreeze: onResolveFreeze,
   };
 }

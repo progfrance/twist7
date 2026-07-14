@@ -3,6 +3,10 @@ import { EasyAI } from './easyAI';
 import { MediumAI } from './mediumAI';
 import { HardAI } from './hardAI';
 
+export { EasyAI } from './easyAI';
+export { MediumAI } from './mediumAI';
+export { HardAI } from './hardAI';
+
 export function getStrategy(difficulty: Difficulty): AIStrategy {
   switch (difficulty) {
     case 'easy':
@@ -11,6 +15,8 @@ export function getStrategy(difficulty: Difficulty): AIStrategy {
       return new MediumAI();
     case 'hard':
       return new HardAI();
+    default:
+      return new MediumAI();
   }
 }
 
