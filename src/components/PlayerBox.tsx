@@ -125,7 +125,6 @@ export function PlayerBox({
 
         <div
           className="flex flex-wrap items-start gap-2.5 gap-y-3"
-          style={{ maxWidth: cardSize === 'sm' ? 320 : 520 }}
         >
           {visibleCards.map((c, idx) => (
             <Card
