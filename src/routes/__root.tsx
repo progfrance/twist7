@@ -39,7 +39,7 @@ function Shell() {
         <Outlet />
       </main>
       <RulesModal open={rulesOpen} onClose={() => setRulesOpen(false)} />
-      <TanStackRouterDevtools position="bottom-right" />
+      {import.meta.env.DEV && <TanStackRouterDevtools position="bottom-right" />}
     </div>
   );
 }
