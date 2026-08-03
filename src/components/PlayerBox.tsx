@@ -21,6 +21,7 @@ export function PlayerBox({
   cardSize = 'md',
   freezeDrawer = null,
   onFreezeTarget,
+  archetype,
 }: {
   p: Player;
   index: number;
@@ -30,6 +31,7 @@ export function PlayerBox({
   freezeDrawer?: number | null;
   /** Called with a player's index to hand them the Freeze. */
   onFreezeTarget?: (i: number) => void;
+  archetype?: 'aggressive' | 'tactical' | 'cautious';
 }) {
   const { t } = useI18n();
   const visibleCards = p.row;
@@ -38,12 +40,20 @@ export function PlayerBox({
   // highlighted; the drawer can't freeze themselves.
   const isFreezeTarget = freezeDrawer != null && freezeDrawer !== index && p.roundStatus === 'active';
 
+  const archetypeBorder = p.isAI && archetype
+    ? archetype === 'aggressive'
+      ? 'border-orange-500/50'
+      : archetype === 'tactical'
+        ? 'border-emerald-500/50'
+        : 'border-slate-400/50'
+    : '';
+
   return (
     <div
       onClick={isFreezeTarget ? () => onFreezeTarget?.(index) : undefined}
       className={`rounded-lg border transition ${
         isCurrent ? 'border-emerald-400 bg-emerald-950/40' : 'border-zinc-800 bg-zinc-900'
-      } ${isFreezeTarget ? 'cursor-pointer ring-2 ring-sky-400 hover:bg-sky-950/40' : ''} p-4`}
+      } ${isFreezeTarget ? 'cursor-pointer ring-2 ring-sky-400 hover:bg-sky-950/40' : ''} ${archetypeBorder} p-4`}
     >
       {p.roundStatus === 'frozen' && (
         <div className="mb-2 w-full rounded-md border border-sky-500/40 bg-sky-950/50 px-3 py-1.5 text-center text-sm font-semibold text-sky-200">

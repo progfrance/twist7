@@ -3,7 +3,7 @@ import { useEffect, useMemo } from 'react';
 import { useTwist7Game } from '../hooks/useTwist7Game';
 import { useAiMove } from '../hooks/useAiMove';
 import { useI18n } from '../i18n';
-import { DeckPile } from '../components/DeckPile';
+import { GameHub } from '../components/GameHub';
 import { ScoreTable } from '../components/ScoreTable';
 import { PlayerBox, type CardSize } from '../components/PlayerBox';
 import type { Difficulty } from '../engine/types';
@@ -108,68 +108,32 @@ function GameView() {
 
       <div className="flex flex-col gap-6 lg:flex-row">
         <main className="min-w-0 flex-1">
-          <div className="relative">
-            {n === 2 ? (
-              <div className="flex flex-col gap-6">
-                <div className="flex justify-center">
-                  <DeckPile count={state.deck.length} label={t('game.deck')} />
-                </div>
-                <div className="flex flex-col gap-6 lg:flex-row">
-                  {state.players.map((p, i) => (
-                    <div key={p.id} className="flex-1 min-w-0">
-                      <PlayerBox
-                        p={p}
-                        index={i}
-                        isCurrent={i === state.currentIndex && state.phase === 'play'}
-                        cardSize={cardSize}
-                        freezeDrawer={freezeDrawer}
-                        onFreezeTarget={resolveFreeze}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-6">
-                <div className="flex justify-center">
-                  <DeckPile count={state.deck.length} label={t('game.deck')} />
-                </div>
-                <div
-                  className="grid gap-4"
-                  style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}
-                >
-                  {state.players.map((p, i) => (
-                    <PlayerBox
-                      key={p.id}
-                      p={p}
-                      index={i}
-                      isCurrent={i === state.currentIndex && state.phase === 'play'}
-                      cardSize={cardSize}
-                      freezeDrawer={freezeDrawer}
-                      onFreezeTarget={resolveFreeze}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+          <div className="flex flex-col items-center gap-6">
+            {/* Central hub: deck + round info */}
+            <GameHub state={state} />
 
+            {/* Players around the hub */}
+            <div
+              className={`w-full ${n === 2 ? 'flex flex-col gap-4' : 'grid gap-4'}`}
+              style={n >= 3 ? { gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))' } : undefined}
+            >
+              {state.players.map((p, i) => (
+                <PlayerBox
+                  key={p.id}
+                  p={p}
+                  index={i}
+                  isCurrent={i === state.currentIndex && state.phase === 'play'}
+                  cardSize={cardSize}
+                  freezeDrawer={freezeDrawer}
+                  onFreezeTarget={resolveFreeze}
+                  archetype={(p as any).archetype}
+                />
+              ))}
+            </div>
+          </div>
         </main>
 
         <aside className="lg:w-96 lg:shrink-0 flex flex-col gap-4">
-          {/* Round + dealer */}
-          <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
-            <div className="text-3xl font-extrabold leading-none text-emerald-300">
-              {t('game.round', { n: state.roundNumber })}
-            </div>
-            <div className="mt-2 text-sm text-zinc-400">
-              {t('game.dealer', { name: state.players[state.dealerIndex]?.name ?? '?' })}
-            </div>
-            <div className="mt-1 text-sm text-zinc-500">
-              {t('game.target', { n: state.targetScore })}
-            </div>
-          </div>
-
           {/* Control panel */}
           <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
             {state.pendingSecondChance != null && (
