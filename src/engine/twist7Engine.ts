@@ -433,7 +433,11 @@ function autoTwistThreeTarget(state: Twist7State, drawerIdx: number): number {
 export function resolveFreeze(state: Twist7State, targetIdx: number): Twist7State {
   const idx = state.pendingFreeze;
   if (idx == null) return state;
-  if (targetIdx === idx || state.players[targetIdx]?.roundStatus !== 'active') return state;
+  if (targetIdx === idx) throw new Error('cannot freeze yourself');
+  const target = state.players[targetIdx];
+  if (!target || target.roundStatus !== 'active') {
+    throw new Error('target is not active');
+  }
   let s = giveFreeze(state, targetIdx);
   if (s.phase === 'play') s = advanceTurn(s);
   return s;

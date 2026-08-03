@@ -141,6 +141,31 @@ describe('deal & round flow', () => {
     expect(s.currentIndex).toBe(0);
   });
 
+  it('resolveFreeze throws when target is the drawer', () => {
+    let s = createGame({ ...setup2, dealerIndex: 1 });
+    s = withDeck(s, [num('d0', 5), num('d1', 3)]);
+    s = startRound(s);
+    s = withDeck(s, [freeze('f1')]);
+    s = takeCard(s); // pendingFreeze = 0 (A is the drawer)
+    expect(() => resolveFreeze(s, 0)).toThrow('cannot freeze yourself');
+  });
+
+  it('resolveFreeze throws when target is not active', () => {
+    let s = createGame({ ...setup2, dealerIndex: 1 });
+    s = withDeck(s, [num('d0', 5), num('d1', 3)]);
+    s = startRound(s);
+    s = withDeck(s, [freeze('f1')]);
+    s = takeCard(s);
+    // B has stayed (not active)
+    s = {
+      ...s,
+      players: s.players.map((p, i) =>
+        i === 1 ? { ...p, roundStatus: 'stayed' as const } : p,
+      ),
+    };
+    expect(() => resolveFreeze(s, 1)).toThrow('target is not active');
+  });
+
   it('an AI hands the Freeze to the strongest active opponent', () => {
     let s = createGame({
       players: [
