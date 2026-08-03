@@ -109,12 +109,14 @@ function GameView() {
         </Link>
       </div>
 
-      <div className="flex flex-col gap-6 lg:flex-row">
+      {/* Hub centered on full width */}
+      <div className="flex justify-center">
+        <GameHub state={state} />
+      </div>
+
+      <div className="mt-5 flex flex-col gap-6 lg:flex-row">
         <main className="min-w-0 flex-1">
           <div className="flex flex-col items-center gap-6">
-            {/* Central hub: deck + round info */}
-            <GameHub state={state} />
-
             {/* Players around the hub */}
             <div
               className={`w-full ${n === 2 ? 'flex flex-col gap-4' : 'grid gap-5'}`}
