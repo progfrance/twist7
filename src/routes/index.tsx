@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useI18n } from '../i18n';
-import type { Difficulty } from '../ai';
+import type { Difficulty } from '../engine/types';
 
 export const Route = createFileRoute('/')({
   component: Setup,

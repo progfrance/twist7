@@ -33,6 +33,7 @@ export interface Player {
   name: string;
   isAI: boolean;
   difficulty: Difficulty;
+  archetype?: 'aggressive' | 'tactical' | 'cautious';
   bankedScore: number;
   // per-round state
   row: Card[];
@@ -47,7 +48,7 @@ export interface Player {
 export type GamePhase = 'setup' | 'play' | 'roundEnd' | 'gameOver';
 
 export interface Twist7Setup {
-  players: { id: string; name: string; isAI: boolean; difficulty?: Difficulty }[];
+  players: { id: string; name: string; isAI: boolean; difficulty?: Difficulty; archetype?: 'aggressive' | 'tactical' | 'cautious' }[];
   dealerIndex?: number;
 }
 

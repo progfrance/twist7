@@ -6,7 +6,7 @@ import { useI18n } from '../i18n';
 import { DeckPile } from '../components/DeckPile';
 import { ScoreTable } from '../components/ScoreTable';
 import { PlayerBox, type CardSize } from '../components/PlayerBox';
-import type { Difficulty } from '../ai';
+import type { Difficulty } from '../engine/types';
 import type { Twist7Setup } from '../engine/types';
 
 export const Route = createFileRoute('/game/$mode')({

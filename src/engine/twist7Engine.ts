@@ -86,6 +86,7 @@ export function createGame(setup: Twist7Setup, targetScore = 200): Twist7State {
     name: p.name,
     isAI: p.isAI,
     difficulty: p.difficulty ?? 'medium',
+    archetype: p.archetype,
     bankedScore: 0,
     row: [],
     distinct: [],

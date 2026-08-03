@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Twist7State } from '../engine/types';
-import { easyDecide, mediumDecide, hardDecide } from '../ai';
+import { decide } from '../ai/engine';
 
 interface UseAiMoveArgs {
   state: Twist7State;
@@ -9,8 +9,6 @@ interface UseAiMoveArgs {
   onStay: () => void;
   onResolveSecondChance: (useIt: boolean) => void;
 }
-
-const DECIDE_MAP = { easy: easyDecide, medium: mediumDecide, hard: hardDecide } as const;
 
 export function useAiMove({ state, enabled, onTake, onStay, onResolveSecondChance }: UseAiMoveArgs) {
   useEffect(() => {
@@ -28,7 +26,6 @@ export function useAiMove({ state, enabled, onTake, onStay, onResolveSecondChanc
     if (!player || player.roundStatus !== 'active') return;
 
     const timer = setTimeout(() => {
-      const decide = DECIDE_MAP[player.difficulty];
       const decision = decide(state);
       if (decision === 'take') onTake();
       else onStay();
