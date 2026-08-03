@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Twist7State } from '../engine/types';
-import { getStrategy } from '../ai';
+import { easyDecide, mediumDecide, hardDecide } from '../ai';
 
 interface UseAiMoveArgs {
   state: Twist7State;
@@ -10,22 +10,17 @@ interface UseAiMoveArgs {
   onResolveSecondChance: (useIt: boolean) => void;
 }
 
-/**
- * Drives the active AI player. While enabled and it's the AI's live turn, waits
- * a beat then asks the strategy to take or stay. A pending Second Chance for an
- * AI player is always taken (it saves them from a bust). Forced effects (e.g.
- * Twist Three) are resolved inside the engine, so the effect simply re-evaluates.
- */
+const DECIDE_MAP = { easy: easyDecide, medium: mediumDecide, hard: hardDecide } as const;
+
 export function useAiMove({ state, enabled, onTake, onStay, onResolveSecondChance }: UseAiMoveArgs) {
   useEffect(() => {
-    // An AI player holding a pending Second Chance always uses it.
     if (state.pendingSecondChance != null) {
       const p = state.players[state.pendingSecondChance];
       if (p?.isAI) {
         const timer = setTimeout(() => onResolveSecondChance(true), 650);
         return () => clearTimeout(timer);
       }
-      return; // human's pending decision: wait for the UI
+      return;
     }
 
     if (!enabled) return;
@@ -33,8 +28,8 @@ export function useAiMove({ state, enabled, onTake, onStay, onResolveSecondChanc
     if (!player || player.roundStatus !== 'active') return;
 
     const timer = setTimeout(() => {
-      const strategy = getStrategy(player.difficulty);
-      const decision = strategy.decide(state);
+      const decide = DECIDE_MAP[player.difficulty];
+      const decision = decide(state);
       if (decision === 'take') onTake();
       else onStay();
     }, 650);

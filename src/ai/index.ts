@@ -1,23 +1,6 @@
-import { AIStrategy, Difficulty } from './types';
-import { EasyAI } from './easyAI';
-import { MediumAI } from './mediumAI';
-import { HardAI } from './hardAI';
+export { easyDecide } from './easyAI';
+export { mediumDecide } from './mediumAI';
+export { hardDecide } from './hardAI';
 
-export { EasyAI } from './easyAI';
-export { MediumAI } from './mediumAI';
-export { HardAI } from './hardAI';
-
-export function getStrategy(difficulty: Difficulty): AIStrategy {
-  switch (difficulty) {
-    case 'easy':
-      return new EasyAI();
-    case 'medium':
-      return new MediumAI();
-    case 'hard':
-      return new HardAI();
-    default:
-      return new MediumAI();
-  }
-}
-
-export type { AIStrategy, Difficulty, AiDecision } from './types';
+export type { AiDecision } from './types';
+export type { Difficulty } from '../engine/types';
