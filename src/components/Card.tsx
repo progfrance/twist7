@@ -8,12 +8,12 @@ type Size = 'sm' | 'md';
 
 /* ─── Sizes ─── */
 const SIZE_CLASS: Record<Size, string> = {
-  sm: 'w-14 h-20 text-xs',
+  sm: 'w-[3.75rem] h-[5.5rem] text-[0.65rem]',
   md: 'w-24 h-34 text-base',
 };
 
 const PIP_CLASS: Record<Size, string> = {
-  sm: 'w-2 h-2',
+  sm: 'w-2.5 h-2.5',
   md: 'w-3 h-3',
 };
 

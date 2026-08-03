@@ -98,6 +98,9 @@ function GameView() {
   // Smaller cards once there are 3+ players so the grid stays readable
   const cardSize: CardSize = n >= 3 ? 'sm' : 'md';
 
+  // Grid columns: 2 for 2-3 players, 3 for 4-6
+  const gridCols = n <= 3 ? 2 : 3;
+
   return (
     <div className="mx-auto max-w-7xl p-4 lg:p-6">
       <div className="mb-5 flex items-center justify-between">
@@ -114,8 +117,8 @@ function GameView() {
 
             {/* Players around the hub */}
             <div
-              className={`w-full ${n === 2 ? 'flex flex-col gap-4' : 'grid gap-4'}`}
-              style={n >= 3 ? { gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))' } : undefined}
+              className={`w-full ${n === 2 ? 'flex flex-col gap-4' : 'grid gap-5'}`}
+              style={n >= 3 ? { gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` } : undefined}
             >
               {state.players.map((p, i) => (
                 <PlayerBox
@@ -133,7 +136,7 @@ function GameView() {
           </div>
         </main>
 
-        <aside className="lg:w-96 lg:shrink-0 flex flex-col gap-4">
+        <aside className="lg:w-[420px] lg:shrink-0 flex flex-col gap-4">
           {/* Control panel */}
           <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
             {state.pendingSecondChance != null && (

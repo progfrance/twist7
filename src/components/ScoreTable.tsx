@@ -11,44 +11,46 @@ export function ScoreTable({ players, history, showHeader = true }: ScoreTablePr
   const { t } = useI18n();
 
   return (
-    <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
+    <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-3">
       {showHeader && (
-        <h3 className="mb-3 text-center text-base font-semibold text-emerald-300">
+        <h3 className="mb-2 text-center text-sm font-semibold text-emerald-300">
           {t('game.scoreRecap')}
         </h3>
       )}
-      <table className="w-full text-base">
-        <thead>
-          <tr className="text-zinc-400">
-            <th className="px-3 py-2 text-left">{t('game.colRound')}</th>
-            {players.map((p) => (
-              <th key={p.id} className="break-words px-3 py-2 text-center text-sm font-medium">{p.name}</th>
+      <div className="overflow-x-auto">
+        <table className="min-w-full text-sm" style={{ minWidth: `${players.length * 52 + 64}px` }}>
+          <thead>
+            <tr className="text-zinc-400">
+              <th className="px-2 py-1.5 text-left text-xs">{t('game.colRound')}</th>
+              {players.map((p) => (
+                <th key={p.id} className="max-w-[72px] truncate px-2 py-1.5 text-center text-xs font-medium" title={p.name}>{p.name}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {history.map((h) => (
+              <tr key={h.round} className="border-t border-zinc-800/60">
+                <td className="px-2 py-1 text-left text-zinc-300">{t('game.round', { n: h.round })}</td>
+                {players.map((p, i) => (
+                  <td key={p.id} className="px-2 py-1 text-center tabular-nums text-zinc-200">
+                    {h.scores[i] ?? 0}
+                  </td>
+                ))}
+              </tr>
             ))}
-          </tr>
-        </thead>
-        <tbody>
-          {history.map((h) => (
-            <tr key={h.round} className="border-t border-zinc-800">
-              <td className="px-3 py-2 text-left text-zinc-100">{t('game.round', { n: h.round })}</td>
-              {players.map((p, i) => (
-                <td key={p.id} className="px-3 py-2 text-center text-zinc-200">
-                  {h.scores[i] ?? 0}
+          </tbody>
+          <tfoot>
+            <tr className="border-t border-zinc-700">
+              <td className="px-2 py-1.5 text-left text-xs font-bold text-zinc-300">{t('game.colTotal')}</td>
+              {players.map((p) => (
+                <td key={p.id} className="px-2 py-1.5 text-center text-xs font-bold tabular-nums text-emerald-300">
+                  {p.bankedScore}
                 </td>
               ))}
             </tr>
-          ))}
-        </tbody>
-        <tfoot>
-          <tr className="border-t border-zinc-700 text-zinc-400">
-            <td className="px-3 py-2 text-left font-semibold">{t('game.colTotal')}</td>
-            {players.map((p) => (
-              <td key={p.id} className="px-3 py-2 text-center font-semibold text-emerald-300">
-                {p.bankedScore}
-              </td>
-            ))}
-          </tr>
-        </tfoot>
-      </table>
+          </tfoot>
+        </table>
+      </div>
     </div>
   );
 }

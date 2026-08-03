@@ -87,18 +87,18 @@ export function PlayerBox({
           {p.isAI && <span className="text-xs text-zinc-500">({t('common.cpu')})</span>}
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex flex-col items-end gap-1">
+          <div className="flex flex-col items-end gap-0.5">
             <span
-              className={`flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold tabular-nums ${
+              className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-sm font-bold tabular-nums shadow-sm ${
                 p.roundStatus === 'busted'
-                  ? 'bg-red-500/15 text-red-300'
-                  : 'bg-amber-500/15 text-amber-300'
+                  ? 'bg-red-500/20 text-red-200 ring-1 ring-red-500/30'
+                  : 'bg-amber-500/20 text-amber-200 ring-1 ring-amber-500/20'
               }`}
             >
               {t('game.roundScore', { n: scoreRow(p) })}
-              {p.twistSeven && <span className="text-[0.65rem] text-emerald-300">{t('game.twist7Tag')}</span>}
+              {p.twistSeven && <span className="text-[0.6rem] font-extrabold text-emerald-300 uppercase">{t('game.twist7Tag')}</span>}
             </span>
-            <span className="flex items-center gap-1 rounded-md bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold tabular-nums text-emerald-300">
+            <span className="flex items-center gap-1.5 rounded-md bg-emerald-500/20 px-2.5 py-1 text-sm font-bold tabular-nums text-emerald-200 ring-1 ring-emerald-500/20 shadow-sm">
               {t('game.banked', { n: p.bankedScore })}
             </span>
           </div>
@@ -124,8 +124,8 @@ export function PlayerBox({
           )}
 
         <div
-          className="flex flex-wrap items-start gap-2 gap-y-2.5"
-          style={{ maxWidth: cardSize === 'sm' ? 240 : 520 }}
+          className="flex flex-wrap items-start gap-2.5 gap-y-3"
+          style={{ maxWidth: cardSize === 'sm' ? 320 : 520 }}
         >
           {visibleCards.map((c, idx) => (
             <Card
