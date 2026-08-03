@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useI18n } from '../i18n';
-import type { Difficulty } from '../engine/types';
+type Archetype = 'aggressive' | 'tactical' | 'cautious';
 
 export const Route = createFileRoute('/')({
   component: Setup,
@@ -11,18 +11,22 @@ interface PlayerSetup {
   id: string;
   name: string;
   isAI: boolean;
-  difficulty: Difficulty;
+  archetype: Archetype;
 }
 
-const DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard'];
+const ARCHETYPES: { value: Archetype; labelKey: string }[] = [
+  { value: 'aggressive', labelKey: 'archetype.aggressive' },
+  { value: 'tactical', labelKey: 'archetype.tactical' },
+  { value: 'cautious', labelKey: 'archetype.cautious' },
+];
 
 function Setup() {
   const { t } = useI18n();
   const navigate = useNavigate();
 
   const [players, setPlayers] = useState<PlayerSetup[]>([
-    { id: 'p1', name: t('common.you'), isAI: false, difficulty: 'medium' },
-    { id: 'p2', name: t('setup.player', { n: 2 }), isAI: true, difficulty: 'medium' },
+    { id: 'p1', name: t('common.you'), isAI: false, archetype: 'tactical' },
+    { id: 'p2', name: t('setup.player', { n: 2 }), isAI: true, archetype: 'tactical' },
   ]);
 
   const update = (id: string, patch: Partial<PlayerSetup>) =>
@@ -37,7 +41,7 @@ function Setup() {
               id: `p${ps.length + 1}`,
               name: t('setup.player', { n: ps.length + 1 }),
               isAI: true,
-              difficulty: 'medium',
+              archetype: 'tactical',
             },
           ]
         : ps,
@@ -47,7 +51,8 @@ function Setup() {
     setPlayers((ps) => (ps.length > 2 ? ps.filter((p) => p.id !== id) : ps));
 
   const start = () => {
-    const mode = players.find((p) => p.isAI)?.difficulty ?? 'medium';
+    const firstAI = players.find((p) => p.isAI);
+    const mode = firstAI?.archetype ?? 'tactical';
     navigate({ to: '/game/$mode', params: { mode }, state: { players } } as never);
   };
 
@@ -88,16 +93,16 @@ function Setup() {
               </select>
               {p.isAI && (
                 <select
-                  value={p.difficulty}
+                  value={p.archetype}
                   onChange={(e) =>
-                    update(p.id, { difficulty: e.target.value as Difficulty })
+                    update(p.id, { archetype: e.target.value as Archetype })
                   }
                   className="rounded bg-zinc-800 px-2 py-1 text-sm text-zinc-100"
-                  aria-label={t('setup.difficulty')}
+                  aria-label={t('setup.archetype')}
                 >
-                  {DIFFICULTIES.map((d) => (
-                    <option key={d} value={d}>
-                      {t(`setup.${d}`)}
+                  {ARCHETYPES.map((a) => (
+                    <option key={a.value} value={a.value}>
+                      {t(a.labelKey)}
                     </option>
                   ))}
                 </select>
