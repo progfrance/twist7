@@ -109,12 +109,7 @@ function GameView() {
         </Link>
       </div>
 
-      {/* Hub centered on full width */}
-      <div className="flex justify-center">
-        <GameHub state={state} />
-      </div>
-
-      <div className="mt-5 flex flex-col gap-6 lg:flex-row">
+      <div className="flex flex-col gap-6 lg:flex-row">
         <main className="min-w-0 flex-1">
           <div className="flex flex-col items-center gap-6">
             {/* Players around the hub */}
@@ -139,6 +134,9 @@ function GameView() {
         </main>
 
         <aside className="lg:w-[420px] lg:shrink-0 flex flex-col gap-4">
+          {/* Game hub: deck + round info */}
+          <GameHub state={state} />
+
           {/* Control panel */}
           <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
             {state.pendingSecondChance != null && (
