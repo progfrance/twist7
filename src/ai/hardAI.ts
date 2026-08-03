@@ -24,10 +24,10 @@ export class HardAI implements AIStrategy {
     const riskTolerance = 0.35 + pressure * 0.3; // ~0.35 -> ~0.65
 
     // Twist 7 combo: one distinct number away from the +15 bonus justifies extra risk.
-    if (me.distinct.size >= TWIST7_DISTINCT_COUNT - 1) return pBust < 0.6 ? 'take' : 'stay';
+    if (me.distinct.length >= TWIST7_DISTINCT_COUNT - 1) return pBust < 0.6 ? 'take' : 'stay';
 
     // Dry deck with few high cards left and a weak board -> bank.
-    if (remainingHigh <= 1 && me.distinct.size < 5) return 'stay';
+    if (remainingHigh <= 1 && me.distinct.length < 5) return 'stay';
 
     return pBust < riskTolerance ? 'take' : 'stay';
   }

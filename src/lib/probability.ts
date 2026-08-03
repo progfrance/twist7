@@ -1,7 +1,7 @@
 import { Twist7State } from '../engine/types';
 
 /** P(next flip duplicates a value already held) = risky cards / remaining. */
-export function bustProbability(state: Twist7State, distinct: Set<number>): number {
+export function bustProbability(state: Twist7State, distinct: number[]): number {
   const total = state.deck.length;
   if (total === 0) return 0;
   let risky = 0;
@@ -12,8 +12,8 @@ export function bustProbability(state: Twist7State, distinct: Set<number>): numb
 }
 
 /** Crude expected marginal gain of one more safe flip. */
-export function expectedGain(distinct: Set<number>): number {
+export function expectedGain(distinct: number[]): number {
   const current = [...distinct].reduce<number>((a, v) => a + v, 0);
-  const remaining = Math.max(1, 13 - distinct.size);
+  const remaining = Math.max(1, 13 - distinct.length);
   return current / remaining;
 }

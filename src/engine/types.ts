@@ -36,7 +36,7 @@ export interface Player {
   bankedScore: number;
   // per-round state
   row: Card[];
-  distinct: Set<number>; // distinct number values currently held
+  distinct: number[]; // distinct number values currently held (sorted)
   roundScore: number;
   roundStatus: RoundStatus;
   secondChance: boolean;

@@ -42,7 +42,7 @@ function addDistinct(state: Twist7State, idx: number, value: number): Twist7Stat
   return {
     ...state,
     players: state.players.map((p, i) =>
-      i === idx ? { ...p, distinct: new Set(p.distinct).add(value) } : p,
+      i === idx ? { ...p, distinct: [...p.distinct, value].sort((a, b) => a - b) } : p,
     ),
   };
 }
@@ -88,7 +88,7 @@ export function createGame(setup: Twist7Setup, targetScore = 200): Twist7State {
     difficulty: p.difficulty ?? 'medium',
     bankedScore: 0,
     row: [],
-    distinct: new Set<number>(),
+    distinct: [],
     roundScore: 0,
     roundStatus: 'active',
     secondChance: false,
@@ -123,7 +123,7 @@ export function startRound(state: Twist7State): Twist7State {
     players: state.players.map((p) => ({
       ...p,
       row: [],
-      distinct: new Set<number>(),
+      distinct: [],
       roundScore: 0,
       roundStatus: 'active',
       secondChance: false,
@@ -169,7 +169,7 @@ export function takeCard(state: Twist7State): Twist7State {
   if (!card) return endRound(drawn); // deck + discard exhausted
 
   // Holding a Second Chance and drew a duplicate: let the player decide.
-  if (card.kind === 'number' && p.secondChance && p.distinct.has(card.value)) {
+  if (card.kind === 'number' && p.secondChance && p.distinct.includes(card.value)) {
     const s = addCardToRow(drawn, idx, card); // provisional, removed if used
     return { ...s, pendingSecondChance: idx };
   }
@@ -257,7 +257,7 @@ export function nextRound(state: Twist7State): Twist7State {
     players: state.players.map((p) => ({
       ...p,
       row: [],
-      distinct: new Set<number>(),
+      distinct: [],
       roundScore: 0,
       roundStatus: 'active',
       secondChance: false,
@@ -284,12 +284,12 @@ function applyDrawnCard(
 
   if (isNumber(card)) {
     const p = s.players[idx];
-    if (p.distinct.has(card.value)) {
+    if (p.distinct.includes(card.value)) {
       if (p.secondChance) return useSecondChance(s, idx); // save the turn (recursive contexts)
       return bustPlayer(s, idx);
     }
     s = addDistinct(s, idx, card.value);
-    if (s.players[idx].distinct.size >= TWIST7_DISTINCT_COUNT) return twistSeven(s, idx);
+    if (s.players[idx].distinct.length >= TWIST7_DISTINCT_COUNT) return twistSeven(s, idx);
     return s;
   }
 

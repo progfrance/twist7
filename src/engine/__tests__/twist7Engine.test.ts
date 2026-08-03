@@ -114,7 +114,7 @@ describe('deal & round flow', () => {
       ...s,
       players: s.players.map((p, i) =>
         i === 0
-          ? { ...p, row: [num('d0', 5), plus('m1', 4), dbl('m2')], distinct: new Set([5]) }
+          ? { ...p, row: [num('d0', 5), plus('m1', 4), dbl('m2')], distinct: [5] }
           : p,
       ),
     };
@@ -316,7 +316,7 @@ describe('deal & round flow', () => {
       currentIndex: 0,
       players: s.players.map((p, i) =>
         i === 0
-          ? { ...p, row: [num('a1', 3)], distinct: new Set([3]), roundStatus: 'active' }
+          ? { ...p, row: [num('a1', 3)], distinct: [3], roundStatus: 'active' }
           : { ...p, roundStatus: 'stayed', roundScore: 10, bankedScore: 10 },
       ),
       deck: [freeze('f'), num('x', 7)],
