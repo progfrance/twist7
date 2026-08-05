@@ -115,7 +115,7 @@ function GameView() {
                   cardSize={cardSize}
                   freezeDrawer={freezeDrawer}
                   onFreezeTarget={resolveFreeze}
-                  archetype={(p as any).archetype}
+                  archetype={p.archetype}
                 />
               ))}
             </div>

@@ -13,7 +13,7 @@ export function decide(state: Twist7State): 'take' | 'stay' {
   if (!me || me.roundStatus !== 'active') return 'stay';
   if (scoreRow(me) === 0) return 'take';
 
-  const archetype = (me as any).archetype ?? 'tactical';
+  const archetype = me.archetype ?? 'tactical';
   const profile = PROFILES[archetype] ?? tactical;
 
   const pBust = bustProbability(state, me.distinct);
