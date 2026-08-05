@@ -1,19 +1,8 @@
 import type { AIProfile } from '../types';
 import { Twist7State, Player } from '../../engine/types';
-import { remainingNumberCopies, scoreRow, TWIST7_DISTINCT_COUNT } from '../../engine/twist7Engine';
+import { remainingNumberCopies, TWIST7_DISTINCT_COUNT } from '../../engine/twist7Engine';
 
 const HIGH_VALUES = [8, 9, 10, 11, 12];
-
-function pickStrongest(state: Twist7State, drawerIdx: number): number {
-  let best = drawerIdx;
-  let bestScore = -1;
-  state.players.forEach((p, i) => {
-    if (i === drawerIdx || p.roundStatus !== 'active') return;
-    const sc = scoreRow(p);
-    if (sc > bestScore) { bestScore = sc; best = i; }
-  });
-  return best;
-}
 
 function cautiousThreshold(state: Twist7State, me: Player): number {
   let total = 0;
@@ -25,8 +14,5 @@ function cautiousThreshold(state: Twist7State, me: Player): number {
 
 export const cautious: AIProfile = {
   maxBustRisk: cautiousThreshold,
-  pickFreezeTarget: pickStrongest,
-  pickTwistThreeTarget: (_state, idx) => idx, // never force others
-  twistSevenUrgency: 0.3,
   label: 'Prudent',
 };

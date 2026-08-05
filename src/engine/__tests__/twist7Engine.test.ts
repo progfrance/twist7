@@ -332,3 +332,39 @@ describe('deal & round flow', () => {
     expect(s.players[0].bankedScore).toBeGreaterThan(before);
   });
 });
+
+describe('archetype-driven disruptive cards', () => {
+  it('aggressive AI freezes the weakest active opponent, not the strongest', () => {
+    let s = createGame({
+      players: [
+        { id: 'a', name: 'A', isAI: true, archetype: 'aggressive' },
+        { id: 'b', name: 'B', isAI: true, archetype: 'aggressive' },
+        { id: 'c', name: 'C', isAI: true, archetype: 'aggressive' },
+      ],
+      dealerIndex: 2,
+    });
+    s = withDeck(s, [num('a', 10), num('b', 4), num('c', 1)]);
+    s = startRound(s); // current = 0 (A), rows A=10 B=4 C=1
+    s = withDeck(s, [freeze('f')]);
+    s = takeCard(s); // A (aggressive) freezes the weakest opponent (C=1)
+    expect(s.players[2].roundStatus).toBe('frozen'); // C (weakest) frozen
+    expect(s.players[1].roundStatus).toBe('active'); // B (strongest) untouched
+  });
+
+  it('cautious AI never forces a Twist Three onto an opponent (targets self)', () => {
+    let s = createGame({
+      players: [
+        { id: 'a', name: 'A', isAI: true, archetype: 'cautious' },
+        { id: 'b', name: 'B', isAI: true, archetype: 'cautious' },
+      ],
+      dealerIndex: 1,
+    });
+    s = withDeck(s, [num('a', 5), num('b', 2)]);
+    s = startRound(s); // current = 0 (A), A active [5], B active [2]
+    const beforeB = s.players[1].row.length; // 1
+    s = withDeck(s, [twistThree('t'), num('x1', 3), num('x2', 4), num('x3', 6)]);
+    s = takeCard(s); // A draws Twist Three -> targets self (cautious)
+    expect(s.players[1].row.length).toBe(beforeB); // B untouched
+    expect(s.players[0].row.length).toBe(beforeB + 3); // A took the 3 draws
+  });
+});

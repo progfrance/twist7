@@ -5,6 +5,7 @@ import {
   Player,
 } from './types';
 import { buildDeck, shuffle } from './deck';
+import { PROFILE_BEHAVIOR } from '../ai/behavior';
 
 // Laying this many distinct numbers triggers a Twist 7 (+15 bonus).
 export const TWIST7_DISTINCT_COUNT = 7;
@@ -390,39 +391,48 @@ function giveFreeze(state: Twist7State, targetIdx: number): Twist7State {
   return setStatus({ ...state, pendingFreeze: null }, targetIdx, 'frozen');
 }
 
-/**
- * Pick the best Freeze target for a drawer: the active opponent holding the
- * most points (the biggest threat). Returns null if the drawer is the only
- * active player (no one to freeze, so the card is discarded).
- */
-function autoFreezeTarget(state: Twist7State, drawerIdx: number): number | null {
+/** Pick an active opponent (not the drawer) with the extreme score, per `kind`. */
+function targetByScore(
+  state: Twist7State,
+  drawerIdx: number,
+  kind: 'weakest' | 'strongest',
+): number {
   let best = -1;
-  let bestScore = -1;
+  let bestScore = kind === 'strongest' ? -Infinity : Infinity;
   state.players.forEach((p, i) => {
     if (i === drawerIdx || p.roundStatus !== 'active') return;
     const sc = scoreRow(p);
-    if (sc > bestScore) {
-      bestScore = sc;
-      best = i;
-    }
-  });
-  return best >= 0 ? best : null;
-}
-
-/** Pick an active opponent (not the drawer) to receive the Twist Three draws;
- *  falls back to the drawer when no other active player exists. */
-function autoTwistThreeTarget(state: Twist7State, drawerIdx: number): number {
-  let best = drawerIdx;
-  let bestScore = -1;
-  state.players.forEach((p, i) => {
-    if (i === drawerIdx || p.roundStatus !== 'active') return;
-    const sc = scoreRow(p);
-    if (sc > bestScore) {
+    if (kind === 'strongest' ? sc > bestScore : sc < bestScore) {
       bestScore = sc;
       best = i;
     }
   });
   return best;
+}
+
+/**
+ * Freeze target for a drawer: honour the archetype's preferred victim
+ * ('weakest' for aggressive, 'strongest' otherwise). Returns null when there is
+ * no other active opponent (the caller then freezes the drawer themselves).
+ */
+function autoFreezeTarget(state: Twist7State, drawerIdx: number): number | null {
+  const archetype = state.players[drawerIdx]?.archetype ?? 'tactical';
+  const idx = targetByScore(state, drawerIdx, PROFILE_BEHAVIOR[archetype].freezeTarget);
+  return idx >= 0 ? idx : null;
+}
+
+/**
+ * Twist Three target for a drawer: honour the archetype. 'self' means the drawer
+ * takes the three draws (cautious never forces opponents); otherwise the
+ * weakest/strongest active opponent receives them, falling back to the drawer
+ * when nobody else is active.
+ */
+function autoTwistThreeTarget(state: Twist7State, drawerIdx: number): number {
+  const archetype = state.players[drawerIdx]?.archetype ?? 'tactical';
+  const kind = PROFILE_BEHAVIOR[archetype].twistThreeTarget;
+  if (kind === 'self') return drawerIdx;
+  const idx = targetByScore(state, drawerIdx, kind);
+  return idx >= 0 ? idx : drawerIdx;
 }
 
 /**
