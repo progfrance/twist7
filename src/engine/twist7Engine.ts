@@ -476,7 +476,7 @@ function advanceTurn(state: Twist7State): Twist7State {
   return endRound(state); // nobody active left → round over
 }
 
-function endRound(state: Twist7State): Twist7State {
+export function endRound(state: Twist7State): Twist7State {
   // Idempotent: only score/record when actively ending a live round.
   if (state.phase !== 'play') return state;
 
