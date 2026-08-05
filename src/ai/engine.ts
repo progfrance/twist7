@@ -5,6 +5,7 @@ import { aggressive } from './profiles/aggressive';
 import { tactical } from './profiles/tactical';
 import { cautious } from './profiles/cautious';
 import type { AIProfile } from './types';
+import { PROFILE_BEHAVIOR } from './behavior';
 
 const PROFILES: Record<string, AIProfile> = { aggressive, tactical, cautious };
 
@@ -18,7 +19,9 @@ export function decide(state: Twist7State): 'take' | 'stay' {
 
   const pBust = bustProbability(state, me.distinct);
   const threshold = profile.maxBustRisk(state, me);
-  const adjusted = me.distinct.length >= TWIST7_DISTINCT_COUNT - 1 ? threshold + 0.15 : threshold;
+  const adjusted = me.distinct.length >= TWIST7_DISTINCT_COUNT - 1
+    ? threshold + PROFILE_BEHAVIOR[archetype].twistSevenUrgency
+    : threshold;
 
   return pBust < adjusted ? 'take' : 'stay';
 }
