@@ -7,7 +7,7 @@ import { GameHub } from '../components/GameHub';
 import { ScoreTable } from '../components/ScoreTable';
 import { PlayerBox, type CardSize } from '../components/PlayerBox';
 import type { Twist7Setup } from '../engine/types';
-import { defaultSetup } from './gameSetup';
+import { defaultSetup } from '../lib/gameSetup';
 
 export const Route = createFileRoute('/game/$mode')({
   component: GameView,
@@ -16,7 +16,6 @@ export const Route = createFileRoute('/game/$mode')({
 function GameView() {
   const { mode } = useParams({ from: '/game/$mode' });
   const { state: navState } = useLocation();
-  const { t } = useI18n();
 
   const setup = useMemo<Twist7Setup>(() => {
     const incoming = (navState as { players?: Twist7Setup['players'] } | null)?.players;
@@ -24,6 +23,18 @@ function GameView() {
     return defaultSetup(mode);
   }, [navState, mode]);
 
+  // Remount the whole game whenever the player set changes so the reducer
+  // rebuilds a fresh state; otherwise a stale game would persist across
+  // navigations that don't unmount the route component.
+  const setupKey = setup.players
+    .map((p) => `${p.id}:${p.isAI ? 'ai' : 'h'}:${p.archetype ?? ''}`)
+    .join('|');
+
+  return <GameInner key={setupKey} setup={setup} />;
+}
+
+function GameInner({ setup }: { setup: Twist7Setup }) {
+  const { t } = useI18n();
   const { state, take, stay, startRound, nextRound, resolveSecondChance, resolveFreeze } = useTwist7Game(setup);
 
   const active = state.players[state.currentIndex];

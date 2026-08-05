@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { defaultSetup } from '../routes/gameSetup';
+import { defaultSetup } from '../lib/gameSetup';
 
 describe('defaultSetup', () => {
   it('maps an archetype mode to that archetype', () => {
