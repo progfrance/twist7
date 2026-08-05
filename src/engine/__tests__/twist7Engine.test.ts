@@ -8,6 +8,7 @@ import {
   nextRound,
   resolveSecondChance,
   resolveFreeze,
+  endRound,
 } from '../twist7Engine';
 import { DEFAULT_DECK_CONFIG, buildDeck } from '../deck';
 import { Card, Twist7Setup, Twist7State } from '../types';
@@ -366,5 +367,44 @@ describe('archetype-driven disruptive cards', () => {
     s = takeCard(s); // A draws Twist Three -> targets self (cautious)
     expect(s.players[1].row.length).toBe(beforeB); // B untouched
     expect(s.players[0].row.length).toBe(beforeB + 3); // A took the 3 draws
+  });
+});
+
+describe('scoring & end-of-round', () => {
+  it('scoreRow returns 0 for a busted player regardless of row contents', () => {
+    const p = createGame(setup2).players[0];
+    const scored = scoreRow({
+      ...p,
+      roundStatus: 'busted',
+      row: [
+        num('a', 12),
+        { id: 'd', kind: 'modifier', modifier: 'double', amount: 2 },
+        { id: 'p', kind: 'modifier', modifier: 'plus', amount: 4 },
+      ],
+    });
+    expect(scored).toBe(0);
+  });
+
+  it('scoreRow applies x2 before +bonus and adds the Twist 7 bonus', () => {
+    const p = createGame(setup2).players[0];
+    const scored = scoreRow({
+      ...p,
+      twistSeven: true,
+      row: [num('a', 5), { id: 'p', kind: 'modifier', modifier: 'plus', amount: 4 }, { id: 'd', kind: 'modifier', modifier: 'double', amount: 2 }],
+    });
+    // (5 * 2) + 4 + 15 = 29
+    expect(scored).toBe(29);
+  });
+
+  it('endRound breaks a lead tie in favour of the first player at game end', () => {
+    let s = createGame(setup2); // targetScore = 200
+    s = {
+      ...s,
+      phase: 'play',
+      players: s.players.map((p, i) => ({ ...p, bankedScore: 200, isAI: i === 0 })),
+    };
+    const ended = endRound(s);
+    expect(ended.phase).toBe('gameOver');
+    expect(ended.winnerId).toBe('a'); // index 0 wins ties
   });
 });
