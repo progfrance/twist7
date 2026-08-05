@@ -1,12 +1,20 @@
 import { Twist7State } from '../engine/types';
 
-/** P(next flip duplicates a value already held) = risky cards / remaining. */
+/**
+ * P(next flip duplicates a value already held) = risky cards / remaining.
+ *
+ * The discard pile is reshuffled into the draw pile by `drawTop`, so any card
+ * still in play can come from either the deck or the discard — both count as the
+ * unseen pool. Cards already sitting in players' rows are naturally excluded
+ * because they are no longer in that pool.
+ */
 export function bustProbability(state: Twist7State, distinct: number[]): number {
-  const total = state.deck.length;
+  const pool = [...state.deck, ...state.discard];
+  const total = pool.length;
   if (total === 0) return 0;
   let risky = 0;
   for (const v of distinct) {
-    risky += state.deck.filter((c) => c.kind === 'number' && c.value === v).length;
+    risky += pool.filter((c) => c.kind === 'number' && c.value === v).length;
   }
   return risky / total;
 }
