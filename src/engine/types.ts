@@ -2,7 +2,6 @@
 // Twist7 — core state machine types (pure TypeScript, no React imports)
 // ---------------------------------------------------------------------------
 
-export type Difficulty = 'easy' | 'medium' | 'hard';
 
 export type CardValue = number; // 0..12
 
@@ -32,7 +31,6 @@ export interface Player {
   readonly id: PlayerId;
   name: string;
   isAI: boolean;
-  difficulty: Difficulty;
   archetype?: 'aggressive' | 'tactical' | 'cautious';
   bankedScore: number;
   // per-round state
@@ -48,7 +46,7 @@ export interface Player {
 export type GamePhase = 'setup' | 'play' | 'roundEnd' | 'gameOver';
 
 export interface Twist7Setup {
-  players: { id: string; name: string; isAI: boolean; difficulty?: Difficulty; archetype?: 'aggressive' | 'tactical' | 'cautious' }[];
+  players: { id: string; name: string; isAI: boolean; archetype?: 'aggressive' | 'tactical' | 'cautious' }[];
   dealerIndex?: number;
 }
 

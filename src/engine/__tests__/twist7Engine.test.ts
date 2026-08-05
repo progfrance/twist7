@@ -169,9 +169,9 @@ describe('deal & round flow', () => {
   it('an AI hands the Freeze to the strongest active opponent', () => {
     let s = createGame({
       players: [
-        { id: 'a', name: 'A', isAI: true, difficulty: 'hard' },
-        { id: 'b', name: 'B', isAI: true, difficulty: 'hard' },
-        { id: 'c', name: 'C', isAI: true, difficulty: 'hard' },
+        { id: 'a', name: 'A', isAI: true },
+        { id: 'b', name: 'B', isAI: true },
+        { id: 'c', name: 'C', isAI: true },
       ],
       dealerIndex: 2,
     });
