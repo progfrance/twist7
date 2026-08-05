@@ -6,23 +6,12 @@ import { useI18n } from '../i18n';
 import { GameHub } from '../components/GameHub';
 import { ScoreTable } from '../components/ScoreTable';
 import { PlayerBox, type CardSize } from '../components/PlayerBox';
-import type { Difficulty } from '../engine/types';
 import type { Twist7Setup } from '../engine/types';
+import { defaultSetup } from './gameSetup';
 
 export const Route = createFileRoute('/game/$mode')({
   component: GameView,
 });
-
-function defaultSetup(mode: string): Twist7Setup {
-  const difficulty: Difficulty =
-    mode === 'easy' || mode === 'medium' || mode === 'hard' ? mode : 'medium';
-  return {
-    players: [
-      { id: 'human', name: 'You', isAI: false },
-      { id: 'ai', name: 'CPU', isAI: true, difficulty },
-    ],
-  };
-}
 
 function GameView() {
   const { mode } = useParams({ from: '/game/$mode' });
