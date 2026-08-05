@@ -467,6 +467,29 @@ function FreezeContent({
 }
 
 /* ─── Main Card component ─── */
+/* Hoisted so the action-card presentation isn't rebuilt on every render. */
+type Translate = (key: string, vars?: Record<string, string | number>) => string;
+const ACTION_CONFIG: Record<
+  string,
+  { bg: string; arch: string; content: (t: Translate, size: Size) => ReactNode }
+> = {
+  freeze: {
+    bg: 'linear-gradient(160deg,#38bdf8,#0284c7)',
+    arch: '#7dd3fc',
+    content: (t) => <FreezeContent t={t} />,
+  },
+  twistThree: {
+    bg: 'linear-gradient(160deg,#fde047,#d97706)',
+    arch: '#f59e0b',
+    content: (t, size) => <TwistThreeContent size={size} t={t} />,
+  },
+  secondChance: {
+    bg: 'linear-gradient(160deg,#fca5a5,#dc2626)',
+    arch: '#f87171',
+    content: (t, size) => <SecondChanceContent size={size} t={t} />,
+  },
+};
+
 export function Card({
   card,
   variant = 'active',
@@ -530,28 +553,8 @@ export function Card({
   }
 
   // action cards
-  const actionConfig: Record<
-    string,
-    { bg: string; arch: string; content: JSX.Element }
-  > = {
-    freeze: {
-      bg: 'linear-gradient(160deg,#38bdf8,#0284c7)',
-      arch: '#7dd3fc',
-      content: <FreezeContent t={t} />,
-    },
-    twistThree: {
-      bg: 'linear-gradient(160deg,#fde047,#d97706)',
-      arch: '#f59e0b',
-      content: <TwistThreeContent size={size} t={t} />,
-    },
-    secondChance: {
-      bg: 'linear-gradient(160deg,#fca5a5,#dc2626)',
-      arch: '#f87171',
-      content: <SecondChanceContent size={size} t={t} />,
-    },
-  };
-
-  const cfg = actionConfig[card.action];
+  const cfg = ACTION_CONFIG[card.action];
+  const content = cfg.content(t, size);
   return (
     <div
       className={base}
@@ -563,7 +566,7 @@ export function Card({
       <GoldFrame>
         <Arch color={cfg.arch} />
       </GoldFrame>
-      {cfg.content}
+      {content}
     </div>
   );
 }
