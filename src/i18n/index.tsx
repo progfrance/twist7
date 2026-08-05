@@ -5,11 +5,16 @@ import es from './locales/es';
 
 export type Locale = 'en' | 'fr' | 'es';
 
+// All known translation keys, derived from the English source dictionary.
+export type I18nKey = keyof typeof en;
+
 const DICTS: Record<Locale, Record<string, string>> = { en, fr, es };
 const STORAGE_KEY = 'twist7.locale';
 
 interface I18nContextValue {
-  t: (key: string, vars?: Record<string, string | number>) => string;
+  // `string & {}` keeps editor autocompletion for known keys while still
+  // permitting dynamic keys built at runtime (e.g. `card.number.${value}`).
+  t: (key: I18nKey | (string & {}), vars?: Record<string, string | number>) => string;
   locale: Locale;
   setLocale: (l: Locale) => void;
 }
