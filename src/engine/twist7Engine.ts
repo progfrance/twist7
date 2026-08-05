@@ -286,7 +286,7 @@ function applyDrawnCard(
   if (isNumber(card)) {
     const p = s.players[idx];
     if (p.distinct.includes(card.value)) {
-      if (p.secondChance) return useSecondChance(s, idx); // save the turn (recursive contexts)
+      if (p.secondChance) return consumeSecondChance(s, idx); // save the turn (recursive contexts)
       return bustPlayer(s, idx);
     }
     s = addDistinct(s, idx, card.value);
@@ -298,7 +298,7 @@ function applyDrawnCard(
   return s;
 }
 
-function useSecondChance(state: Twist7State, idx: number): Twist7State {
+function consumeSecondChance(state: Twist7State, idx: number): Twist7State {
   const p = state.players[idx];
   const row = p.row.slice(0, -1); // discard the duplicate just added
   return {
