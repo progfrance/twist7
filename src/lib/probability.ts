@@ -12,9 +12,16 @@ export function bustProbability(state: Twist7State, distinct: number[]): number 
   const pool = [...state.deck, ...state.discard];
   const total = pool.length;
   if (total === 0) return 0;
+  // Build count map once for numbers in pool
+  const counts = new Map<number, number>();
+  for (const c of pool) {
+    if (c.kind === 'number') {
+      counts.set(c.value, (counts.get(c.value) ?? 0) + 1);
+    }
+  }
   let risky = 0;
   for (const v of distinct) {
-    risky += pool.filter((c) => c.kind === 'number' && c.value === v).length;
+    risky += counts.get(v) ?? 0;
   }
   return risky / total;
 }

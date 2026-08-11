@@ -42,9 +42,21 @@ function addCardToRow(state: Twist7State, idx: number, card: Card): Twist7State 
 function addDistinct(state: Twist7State, idx: number, value: number): Twist7State {
   return {
     ...state,
-    players: state.players.map((p, i) =>
-      i === idx ? { ...p, distinct: [...p.distinct, value].sort((a, b) => a - b) } : p,
-    ),
+    players: state.players.map((p, i) => {
+      if (i !== idx) return p;
+      const arr = p.distinct.slice();
+      // insert value in sorted order without full sort
+      let inserted = false;
+      for (let j = 0; j < arr.length; j++) {
+        if (value < arr[j]) {
+          arr.splice(j, 0, value);
+          inserted = true;
+          break;
+        }
+      }
+      if (!inserted) arr.push(value);
+      return { ...p, distinct: arr };
+    }),
   };
 }
 
