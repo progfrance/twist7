@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useState, useEffect, useRef, type ReactNode } from 'react';
 import { Card } from './Card';
 import type { Card as CardModel } from '../engine/types';
 import { useI18n } from '../i18n';
@@ -16,6 +16,22 @@ const ACTIONS: { card: CardModel; titleKey: string }[] = [
 export function RulesModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { t } = useI18n();
   const [selected, setSelected] = useState(0);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.activeElement as HTMLElement | null;
+    dialogRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      previous?.focus();
+    };
+  }, [open, onClose]);
+
   if (!open) return null;
 
   const actionDesc = (index: number): ReactNode => {
@@ -41,6 +57,11 @@ export function RulesModal({ open, onClose }: { open: boolean; onClose: () => vo
 
   return (
     <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={t('rules.title')}
+      tabIndex={-1}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
       onClick={onClose}
     >

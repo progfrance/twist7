@@ -51,6 +51,19 @@ export function PlayerBox({
   return (
     <div
       onClick={isFreezeTarget ? () => onFreezeTarget?.(index) : undefined}
+      onKeyDown={
+        isFreezeTarget
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onFreezeTarget?.(index);
+              }
+            }
+          : undefined
+      }
+      role={isFreezeTarget ? 'button' : undefined}
+      tabIndex={isFreezeTarget ? 0 : undefined}
+      aria-label={isFreezeTarget ? t('game.freezeTarget', { name: p.name }) : undefined}
       className={`rounded-lg border transition ${
         isCurrent ? 'border-emerald-400 bg-emerald-950/40' : 'border-zinc-800 bg-zinc-900'
       } ${isFreezeTarget ? 'cursor-pointer ring-2 ring-sky-400 hover:bg-sky-950/40' : ''} ${archetypeBorder} p-4`}
