@@ -9,6 +9,7 @@ import {
   resolveSecondChance,
   resolveFreeze,
   endRound,
+  remainingNumberCopies,
 } from '../twist7Engine';
 import { Card, Twist7Setup, Twist7State } from '../types';
 
@@ -388,5 +389,18 @@ describe('scoring & end-of-round', () => {
     const ended = endRound(s);
     expect(ended.phase).toBe('gameOver');
     expect(ended.winnerId).toBe('a'); // index 0 wins ties
+  });
+});
+
+describe('selectors / remaining cards', () => {
+  it('remainingNumberCopies counts cards in the discard pile (reshuffled into the draw pool)', () => {
+    let s = createGame(setup2);
+    s = {
+      ...s,
+      deck: [num('d3', 3)],
+      discard: [num('x12a', 12), num('x12b', 12)],
+    };
+    expect(remainingNumberCopies(s, 12)).toBe(2); // deck-only count would be 0
+    expect(remainingNumberCopies(s, 3)).toBe(1);
   });
 });

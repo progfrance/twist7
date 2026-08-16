@@ -517,5 +517,6 @@ export function endRound(state: Twist7State): Twist7State {
 // Selectors (used by AI / UI)
 // ===========================================================================
 export function remainingNumberCopies(state: Twist7State, value: number): number {
-  return state.deck.filter((c) => isNumber(c) && c.value === value).length;
+  const pool = state.deck.concat(state.discard); // discard reshuffles into the draw pile
+  return pool.filter((c) => isNumber(c) && c.value === value).length;
 }
