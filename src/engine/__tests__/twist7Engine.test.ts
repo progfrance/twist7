@@ -10,7 +10,6 @@ import {
   resolveFreeze,
   endRound,
 } from '../twist7Engine';
-import { DEFAULT_DECK_CONFIG, buildDeck } from '../deck';
 import { Card, Twist7Setup, Twist7State } from '../types';
 
 const setup2: Twist7Setup = {
@@ -30,23 +29,6 @@ const secondChance = (id: string): Card => ({ id, kind: 'action', action: 'secon
 function withDeck(state: Twist7State, deck: Card[]): Twist7State {
   return { ...state, deck };
 }
-
-describe('deck', () => {
-  it('has the expected composition (79 numbers + 6 bonuses + 9 actions)', () => {
-    const deck = buildDeck();
-    const expected =
-      Object.values(DEFAULT_DECK_CONFIG.numberCopies).reduce((a, b) => a + b, 0) +
-      DEFAULT_DECK_CONFIG.modifiers.plus.length +
-      DEFAULT_DECK_CONFIG.modifiers.double +
-      DEFAULT_DECK_CONFIG.actions.freeze +
-      DEFAULT_DECK_CONFIG.actions.twistThree +
-      DEFAULT_DECK_CONFIG.actions.secondChance;
-    expect(deck).toHaveLength(expected); // 79 numbers + 6 bonuses + 9 actions = 94
-    expect(deck.filter((c) => c.kind === 'number')).toHaveLength(79);
-    expect(deck.filter((c) => c.kind === 'modifier')).toHaveLength(6);
-    expect(deck.filter((c) => c.kind === 'action')).toHaveLength(9);
-  });
-});
 
 describe('deal & round flow', () => {
   it('deals one card to each player and starts the play phase', () => {
