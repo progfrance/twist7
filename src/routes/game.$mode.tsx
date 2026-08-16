@@ -1,5 +1,5 @@
 import { createFileRoute, useParams, useLocation, Link } from '@tanstack/react-router';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTwist7Game } from '../hooks/useTwist7Game';
 import { useAiMove } from '../hooks/useAiMove';
 import { useI18n } from '../i18n';
@@ -30,10 +30,18 @@ function GameView() {
     .map((p) => `${p.id}:${p.isAI ? 'ai' : 'h'}:${p.archetype ?? ''}`)
     .join('|');
 
-  return <GameInner key={setupKey} setup={setup} />;
+  const [restartNonce, setRestartNonce] = useState(0);
+
+  return (
+    <GameInner
+      key={`${setupKey}#${restartNonce}`}
+      setup={setup}
+      onPlayAgain={() => setRestartNonce((n) => n + 1)}
+    />
+  );
 }
 
-function GameInner({ setup }: { setup: Twist7Setup }) {
+function GameInner({ setup, onPlayAgain }: { setup: Twist7Setup; onPlayAgain: () => void }) {
   const { t } = useI18n();
   const { state, take, stay, startRound, nextRound, resolveSecondChance, resolveFreeze } = useTwist7Game(setup);
 
@@ -85,9 +93,12 @@ function GameInner({ setup }: { setup: Twist7Setup }) {
           <Link to="/" className="rounded-md bg-zinc-800 px-4 py-2 text-sm text-zinc-200">
             {t('game.menu')}
           </Link>
-          <Link to="/" className="rounded-md bg-emerald-600 px-4 py-2 font-semibold text-white">
+          <button
+            onClick={onPlayAgain}
+            className="rounded-md bg-emerald-600 px-4 py-2 font-semibold text-white"
+          >
             {t('game.playAgain')}
-          </Link>
+          </button>
         </div>
       </div>
     );

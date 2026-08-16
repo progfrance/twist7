@@ -53,7 +53,10 @@ function Setup() {
   const start = () => {
     const firstAI = players.find((p) => p.isAI);
     const mode = firstAI?.archetype ?? 'tactical';
-    navigate({ to: '/game/$mode', params: { mode }, state: { players } } as never);
+    // `players` is custom history state read back in game.$mode.tsx. TanStack
+    // Router only types the standard history state, so the field is cast locally;
+    // `to`/`params` above remain fully type-checked.
+    navigate({ to: '/game/$mode', params: { mode }, state: { players } as never });
   };
 
   return (
