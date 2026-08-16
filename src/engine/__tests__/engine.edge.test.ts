@@ -1,16 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { createGame, startRound, takeCard, nextRound, resolveSecondChance, resolveFreeze } from '../twist7Engine';
+import { createGame, startRound, takeCard, nextRound } from '../twist7Engine';
 import { Twist7Setup, Card, Twist7State } from '../types';
 
 const num = (id: string, value: number): Card => ({ id, kind: 'number', value });
-const freeze = (id: string): Card => ({ id, kind: 'action', action: 'freeze' });
-const secondChance = (id: string): Card => ({ id, kind: 'action', action: 'secondChance' });
 
 function withDeck(state: Twist7State, deck: Card[]): Twist7State {
   return { ...state, deck };
-}
-function withDiscard(state: Twist7State, discard: Card[]): Twist7State {
-  return { ...state, discard };
 }
 
 const setup3: Twist7Setup = {
