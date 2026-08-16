@@ -342,8 +342,6 @@ function resolveAction(
   if (action === 'freeze') {
     // The freeze is given to another active player (auto-chosen here for the
     // deal and forced draws; a human's normal turn is handled in takeCard).
-    // With no other active player there is no valid target, so the card is
-    // discarded rather than freezing the drawer.
     const target = autoFreezeTarget(state, idx);
     // No other active player: per the rules the drawer must freeze themselves.
     if (target == null) return giveFreeze(state, idx);
