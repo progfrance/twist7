@@ -16,11 +16,12 @@ export function decide(state: Twist7State): 'take' | 'stay' {
 
   const archetype = me.archetype ?? 'tactical';
   const profile = PROFILES[archetype] ?? tactical;
+  const behavior = PROFILE_BEHAVIOR[archetype] ?? PROFILE_BEHAVIOR.tactical;
 
   const pBust = bustProbability(state, me.distinct);
   const threshold = profile.maxBustRisk(state, me);
   const adjusted = me.distinct.length >= TWIST7_DISTINCT_COUNT - 1
-    ? threshold + PROFILE_BEHAVIOR[archetype].twistSevenUrgency
+    ? threshold + behavior.twistSevenUrgency
     : threshold;
 
   return pBust < adjusted ? 'take' : 'stay';
